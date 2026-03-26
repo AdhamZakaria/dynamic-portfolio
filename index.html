@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adham Zakaria — AI Artist</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--black:#050505;--white:#f5f3ef;--muted:#888580;--hint:#3a3835;--accent:#c8b89a;--border:rgba(255,255,255,0.07)}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'Tenor Sans',sans-serif;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 60px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,5,0.95);border-bottom:0.5px solid var(--border);backdrop-filter:blur(12px)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:18px;letter-spacing:0.1em;color:var(--white);text-decoration:none}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0805 0%,#050505 50%,#080a0d 100%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:80px 80px}
+.hero-content{position:relative;z-index:2}
+.hero-eyebrow{font-size:10px;letter-spacing:0.35em;color:var(--accent);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.hero-eyebrow::before{content:'';width:40px;height:0.5px;background:var(--accent)}
+.hero-name{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(52px,8vw,96px);line-height:0.95;letter-spacing:-0.02em;margin-bottom:10px}
+.hero-name em{font-style:italic;color:var(--accent)}
+.hero-title{font-size:11px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;margin-bottom:48px}
+.hero-meta{display:flex;gap:48px;align-items:center}
+.hero-stat-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--white);line-height:1}
+.hero-stat-label{font-size:9px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.hero-divider{width:0.5px;height:40px;background:var(--hint)}
+
+/* ABOUT */
+section{padding:100px 60px}
+.section-eyebrow{font-size:9px;letter-spacing:0.35em;color:var(--accent);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-eyebrow::before{content:'';width:24px;height:0.5px;background:var(--accent)}
+.section-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(32px,5vw,56px);line-height:1.1;margin-bottom:52px}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.about-text{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.75;color:rgba(245,243,239,0.8);font-style:italic;margin-bottom:28px}
+.about-detail-row{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.about-detail-label{color:var(--muted);letter-spacing:0.1em}
+.about-detail-val{color:var(--white)}
+
+/* PROJECTS */
+.projects-section{padding:0}
+.projects-header{padding:80px 60px 0}
+
+/* PROJECT BLOCK */
+.project{display:grid;position:relative;overflow:hidden}
+.project-full{grid-template-columns:1fr;min-height:85vh}
+.project-split{grid-template-columns:1fr 1fr;min-height:70vh}
+.project-triple{grid-template-columns:2fr 1fr;min-height:75vh}
+
+/* SCROLL GALLERY */
+.gallery{overflow:hidden;position:relative;background:#080808}
+.gallery-track{display:flex;height:100%;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.gallery-track img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;object-position:center}
+.gallery-nav{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+.gallery-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.3);border:none;cursor:pointer;transition:all .3s;padding:0}
+.gallery-dot.active{background:var(--accent);width:20px;border-radius:2px}
+.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);border:0.5px solid rgba(255,255,255,0.1);color:var(--white);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:10;transition:all .2s}
+.gallery-arrow:hover{background:rgba(0,0,0,0.7)}
+.gallery-prev{left:16px}
+.gallery-next{right:16px}
+
+/* PROJECT INFO */
+.project-info{display:flex;flex-direction:column;justify-content:flex-end;padding:48px 52px;background:var(--black);position:relative}
+.project-info::before{content:'';position:absolute;top:0;left:0;right:0;height:0.5px;background:var(--border)}
+.p-num{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;color:rgba(255,255,255,0.04);line-height:1;margin-bottom:auto;padding-top:8px}
+.p-tag{font-size:9px;letter-spacing:0.25em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.p-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(24px,3vw,38px);color:var(--white);line-height:1.15;margin-bottom:14px}
+.p-desc{font-size:12px;color:var(--muted);line-height:1.75;margin-bottom:18px;max-width:340px}
+.p-result{font-size:10px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;padding-top:14px;border-top:0.5px solid rgba(200,184,154,0.2)}
+
+/* INFO INSIDE GALLERY (for full-width projects) */
+.gallery-overlay-info{position:absolute;bottom:0;left:0;right:0;padding:48px 60px;background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.5) 60%,transparent 100%);z-index:5}
+.gallery-overlay-info .p-tag{margin-bottom:8px}
+.gallery-overlay-info .p-title{font-size:clamp(28px,4vw,52px);margin-bottom:10px}
+.gallery-overlay-info .p-desc{max-width:600px;font-size:13px}
+.gallery-overlay-info .p-result{margin-top:14px;border-top:0.5px solid rgba(200,184,154,0.25)}
+
+/* DIVIDER BETWEEN PROJECTS */
+.project-divider{height:2px;background:var(--black)}
+
+/* SKILLS */
+.skills-section{background:#080808}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.skill-block{padding:36px;border:0.5px solid var(--border);background:var(--black);transition:background .3s}
+.skill-block:hover{background:#0d0d0d}
+.skill-num{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--hint);line-height:1;margin-bottom:16px}
+.skill-name{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--white);margin-bottom:8px}
+.skill-tools{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* CONTACT */
+.contact-section{text-align:center;padding:140px 60px;position:relative}
+.contact-section::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0.5px;height:80px;background:var(--hint)}
+.contact-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(36px,6vw,68px);line-height:1.1;margin-bottom:36px}
+.contact-title em{font-style:italic;color:var(--accent)}
+.contact-links{display:flex;gap:44px;justify-content:center;margin-bottom:52px;flex-wrap:wrap}
+.contact-link{font-size:11px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;text-decoration:none;transition:color .2s}
+.contact-link:hover{color:var(--white)}
+.cta-btn{display:inline-block;padding:15px 44px;border:0.5px solid rgba(200,184,154,0.4);font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--accent);text-decoration:none;transition:all .3s}
+.cta-btn:hover{background:rgba(200,184,154,0.07);border-color:var(--accent)}
+footer{padding:28px 60px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--hint);letter-spacing:0.1em}
+
+@media(max-width:900px){
+  nav{padding:18px 24px}
+  .hero{padding:0 24px 60px}
+  section{padding:70px 24px}
+  .about-grid{grid-template-columns:1fr;gap:40px}
+  .project-split,.project-triple{grid-template-columns:1fr}
+  .gallery-overlay-info{padding:32px 24px}
+  .projects-header{padding:60px 24px 0}
+  .skills-grid{grid-template-columns:1fr 1fr}
+  .contact-links{flex-direction:column;gap:18px;align-items:center}
+  footer{flex-direction:column;gap:8px;text-align:center}
+}
+@media(max-width:600px){
+  .skills-grid{grid-template-columns:1fr}
+  .hero-meta{gap:28px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Adham Zakaria</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Cairo, Egypt · 2026</div>
+    <h1 class="hero-name">Adham<br><em>Zakaria</em></h1>
+    <p class="hero-title">AI Artist · Cinematographer · Brand Content Creator</p>
+    <div class="hero-meta">
+      <div class="hero-stat"><div class="hero-stat-num">15+</div><div class="hero-stat-label">Clients</div></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><div class="hero-stat-num">7</div><div class="hero-stat-label">Projects</div></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><div class="hero-stat-num">$0</div><div class="hero-stat-label">Budget needed</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-eyebrow">About</div>
+  <div class="about-grid">
+    <div>
+      <h2 class="section-title">Where architecture<br>meets the<br><em style="font-style:italic;color:var(--accent)">moving image</em></h2>
+      <p class="about-text">"I approach every frame the way I approached every building — as a space with intention. Trained in Architecture and Urban Design at GUC, I now direct AI-generated brand films that feel like they were shot with a full crew, on location, with a serious budget. They weren't."</p>
+    </div>
+    <div>
+      <div class="about-detail-row"><span class="about-detail-label">Based</span><span class="about-detail-val">Cairo, Egypt</span></div>
+      <div class="about-detail-row"><span class="about-detail-label">Specialisation</span><span class="about-detail-val">AI Cinematic Video · Brand Campaigns</span></div>
+      <div class="about-detail-row"><span class="about-detail-label">Education</span><span class="about-detail-val">B.Sc Architecture, GUC 2024</span></div>
+      <div class="about-detail-row"><span class="about-detail-label">Clients</span><span class="about-detail-val">Fashion · Lifestyle · Entertainment</span></div>
+      <div class="about-detail-row"><span class="about-detail-label">Market</span><span class="about-detail-val">Egypt · Middle East · Global Concepts</span></div>
+      <div class="about-detail-row"><span class="about-detail-label">Languages</span><span class="about-detail-val">Arabic (Native) · English (Fluent)</span></div>
+      <div class="about-detail-row"><span class="about-detail-label">Instagram</span><span class="about-detail-val">@adhamz.studios</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<div id="work" class="projects-section">
+  <div class="projects-header">
+    <div class="section-eyebrow">Selected Work</div>
+    <h2 class="section-title" style="margin-bottom:60px">Seven projects.<br>Every one performed.</h2>
+  </div>
+
+  <!-- 01 ZARA — Full width, cinematic opener -->
+  <div class="project project-full" style="min-height:90vh">
+    <div class="gallery" style="min-height:90vh;position:relative" data-id="zara">
+      <div class="gallery-track">
+        <img src="zara1.png" alt="Zara concept film">
+        <img src="zara2.png" alt="Zara concept film">
+        <img src="zara3.png" alt="Zara concept film">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('zara',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('zara',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-zara">
+        <button class="gallery-dot active" onclick="goTo('zara',0)"></button>
+        <button class="gallery-dot" onclick="goTo('zara',1)"></button>
+        <button class="gallery-dot" onclick="goTo('zara',2)"></button>
+      </div>
+      <div class="gallery-overlay-info">
+        <div class="p-tag">AI Concept Film · 2026</div>
+        <div class="p-title">Zara — 7-Shot Cinematic Campaign</div>
+        <div class="p-desc">An unsolicited concept for Zara — male and female talent across a dark studio and grand marble architectural setting. Zero budget. Full luxury film output directed with a complete cinematographer's brief.</div>
+        <div class="p-result">Agency-level creative direction · Higgsfield + Premiere Pro · 30-second film</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-divider"></div>
+
+  <!-- 02 PORSCHE — Split: gallery left, info right -->
+  <div class="project project-split">
+    <div class="gallery" data-id="porsche">
+      <div class="gallery-track">
+        <img src="porsche1.png" alt="Porsche trailer">
+        <img src="porsche2.png" alt="Porsche trailer">
+        <img src="porsche3.png" alt="Porsche trailer">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('porsche',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('porsche',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-porsche">
+        <button class="gallery-dot active" onclick="goTo('porsche',0)"></button>
+        <button class="gallery-dot" onclick="goTo('porsche',1)"></button>
+        <button class="gallery-dot" onclick="goTo('porsche',2)"></button>
+      </div>
+    </div>
+    <div class="project-info">
+      <div class="p-num">02</div>
+      <div>
+        <div class="p-tag">Automotive Concept Film · 2026</div>
+        <div class="p-title">Porsche — Cinematic Trailer</div>
+        <div class="p-desc">A high-energy cinematic trailer positioning the car not as a machine, but as an experience. Dynamic motion, dramatic lighting, sleek transitions. Precision and power in every frame.</div>
+        <div class="p-result">Demonstrates range beyond fashion · Automotive brand filmmaking</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-divider"></div>
+
+  <!-- 03 FASHION IN WRONG PLACES — Triple layout (big gallery + narrow info) -->
+  <div class="project project-triple">
+    <div class="gallery" data-id="chaos">
+      <div class="gallery-track">
+        <img src="chaos1.png" alt="Fashion in the Wrong Places">
+        <img src="chaos2.png" alt="Fashion in the Wrong Places">
+        <img src="chaos3.png" alt="Fashion in the Wrong Places">
+        <img src="chaos4.png" alt="Fashion in the Wrong Places">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('chaos',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('chaos',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-chaos">
+        <button class="gallery-dot active" onclick="goTo('chaos',0)"></button>
+        <button class="gallery-dot" onclick="goTo('chaos',1)"></button>
+        <button class="gallery-dot" onclick="goTo('chaos',2)"></button>
+        <button class="gallery-dot" onclick="goTo('chaos',3)"></button>
+        <button class="gallery-dot" onclick="goTo('chaos',4)"></button>
+      </div>
+    </div>
+    <div class="project-info">
+      <div class="p-num">03</div>
+      <div>
+        <div class="p-tag">Conceptual Editorial · 2026</div>
+        <div class="p-title">Fashion in the<br>Wrong Places</div>
+        <div class="p-desc">High-fashion editorial styling placed in raw, unexpected everyday environments. Luxury meets chaos — scroll-stopping, ironic, disruptive.</div>
+        <div class="p-result">Surreal fashion direction · Disruptive visual language</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-divider"></div>
+
+  <!-- 04 TEKILA — Info left, gallery right -->
+  <div class="project project-split">
+    <div class="project-info" style="border-left:none">
+      <div class="p-num">04</div>
+      <div>
+        <div class="p-tag">Branded Mini-Series · Jan 2026–Present</div>
+        <div class="p-title">Tekila —<br>Interactive Series</div>
+        <div class="p-desc">An ongoing branded mini-series with a live audience interaction system. Each episode targets a specific consumer behaviour. Next: Tekila Anxiety — a perfume campaign that positions anxiety as the problem the product solves.</div>
+        <div class="p-result">Ongoing · Multi-episode format · Live audience system</div>
+      </div>
+    </div>
+    <div class="gallery" data-id="tekila">
+      <div class="gallery-track">
+        <img src="tekila1.png" alt="Tekila series">
+        <img src="tekila2.png" alt="Tekila series">
+        <img src="tekila3.png" alt="Tekila series">
+        <img src="tekila4.png" alt="Tekila series">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('tekila',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('tekila',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-tekila">
+        <button class="gallery-dot active" onclick="goTo('tekila',0)"></button>
+        <button class="gallery-dot" onclick="goTo('tekila',1)"></button>
+        <button class="gallery-dot" onclick="goTo('tekila',2)"></button>
+        <button class="gallery-dot" onclick="goTo('tekila',3)"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-divider"></div>
+
+  <!-- 05 DOPAMINE — Full width -->
+  <div class="project project-full" style="min-height:80vh">
+    <div class="gallery" style="min-height:80vh;position:relative" data-id="dopamine">
+      <div class="gallery-track">
+        <img src="dopamine1.jpeg" alt="Dopamine Lokal campaign">
+        <img src="dopamine2.jpeg" alt="Dopamine Lokal campaign">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('dopamine',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('dopamine',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-dopamine">
+        <button class="gallery-dot active" onclick="goTo('dopamine',0)"></button>
+        <button class="gallery-dot" onclick="goTo('dopamine',1)"></button>
+      </div>
+      <div class="gallery-overlay-info">
+        <div class="p-tag">Fashion Campaign · Paid · Oct 2025</div>
+        <div class="p-title">Dopamine Lokal — Vintage Old Money</div>
+        <div class="p-desc">A full visual campaign set in Sicily-inspired locations with heritage architecture and vintage vehicles. Shot on location, converted to paid ads — conversion rate exceeded brand benchmarks.</div>
+        <div class="p-result">↑ Conversion rate exceeded benchmarks · Deployed as paid ads</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-divider"></div>
+
+  <!-- 06 LOOM — Triple layout -->
+  <div class="project project-triple" style="grid-template-columns:1fr 2fr">
+    <div class="project-info">
+      <div class="p-num">06</div>
+      <div>
+        <div class="p-tag">Brand Storytelling · Paid · Dec 2025</div>
+        <div class="p-title">Loom Elements —<br>The 48-Hour Story</div>
+        <div class="p-desc">A narrative campaign built around a single customer truth — the brand delivers when it matters most. Shot 2 days before a key life event, turning a logistical strength into an emotional connection.</div>
+        <div class="p-result">Brand value translated into social-first storytelling</div>
+      </div>
+    </div>
+    <div class="gallery" data-id="loom">
+      <div class="gallery-track">
+        <img src="loom1.png" alt="Loom Elements campaign">
+        <img src="loom2.png" alt="Loom Elements campaign">
+        <img src="loom3.png" alt="Loom Elements campaign">
+        <img src="loom4.png" alt="Loom Elements campaign">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('loom',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('loom',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-loom">
+        <button class="gallery-dot active" onclick="goTo('loom',0)"></button>
+        <button class="gallery-dot" onclick="goTo('loom',1)"></button>
+        <button class="gallery-dot" onclick="goTo('loom',2)"></button>
+        <button class="gallery-dot" onclick="goTo('loom',3)"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-divider"></div>
+
+  <!-- 07 MARS — Split gallery right, info left -->
+  <div class="project project-split">
+    <div class="project-info">
+      <div class="p-num">07</div>
+      <div>
+        <div class="p-tag">Surrealist AI Ad · 2026</div>
+        <div class="p-title">Mars Bar —<br>Surreal Concept</div>
+        <div class="p-desc">A surrealist AI concept ad featuring photorealistic product animation. The bar bites back. Agency-level creative direction at zero budget — demonstrating the ability to operate at a global FMCG standard independently.</div>
+        <div class="p-result">Photorealistic output · Agency-standard concept</div>
+      </div>
+    </div>
+    <div class="gallery" data-id="mars">
+      <div class="gallery-track">
+        <img src="mars2.png" alt="Mars bar concept">
+        <img src="mars1.png" alt="Mars bar concept">
+        <img src="mars3.png" alt="Mars bar concept">
+        <img src="mars4.png" alt="Mars bar concept">
+      </div>
+      <button class="gallery-arrow gallery-prev" onclick="slide('mars',-1)">&#8592;</button>
+      <button class="gallery-arrow gallery-next" onclick="slide('mars',1)">&#8594;</button>
+      <div class="gallery-nav" id="dots-mars">
+        <button class="gallery-dot active" onclick="goTo('mars',0)"></button>
+        <button class="gallery-dot" onclick="goTo('mars',1)"></button>
+        <button class="gallery-dot" onclick="goTo('mars',2)"></button>
+        <button class="gallery-dot" onclick="goTo('mars',3)"></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SKILLS -->
+<section id="skills" class="skills-section" style="padding-top:80px;padding-bottom:80px">
+  <div class="section-eyebrow">Capabilities</div>
+  <h2 class="section-title">The full stack.</h2>
+  <div class="skills-grid">
+    <div class="skill-block"><div class="skill-num">01</div><div class="skill-name">AI Video Production</div><div class="skill-tools">Higgsfield · InVideo<br>Cinematic prompt engineering, seed consistency, motion control, photorealistic output</div></div>
+    <div class="skill-block"><div class="skill-num">02</div><div class="skill-name">Video Editing</div><div class="skill-tools">Adobe Premiere Pro · CapCut<br>Assembly, pacing, slow motion, hard cuts, title card design</div></div>
+    <div class="skill-block"><div class="skill-num">03</div><div class="skill-name">Color Grading</div><div class="skill-tools">Lumetri Color · DaVinci Resolve<br>Luxury fashion grade, skin tone protection, film grain, black crushing</div></div>
+    <div class="skill-block"><div class="skill-num">04</div><div class="skill-name">Photography & Retouching</div><div class="skill-tools">Adobe Photoshop · Lightroom<br>Editorial photography, product photography, campaign retouching</div></div>
+    <div class="skill-block"><div class="skill-num">05</div><div class="skill-name">Creative Direction</div><div class="skill-tools">Brief writing · Shot list development<br>Visual storytelling, brand concept, campaign narrative</div></div>
+    <div class="skill-block"><div class="skill-num">06</div><div class="skill-name">Social Media Strategy</div><div class="skill-tools">Instagram Reels · Content calendars<br>Hook writing, hashtag strategy, process content</div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <h2 class="contact-title">Ready to make<br>something <em>exceptional</em>?</h2>
+  <div class="contact-links">
+    <a href="mailto:adhamzakaria17@gmail.com" class="contact-link">adhamzakaria17@gmail.com</a>
+    <a href="tel:+201032873482" class="contact-link">+20 103 287 3482</a>
+    <a href="https://instagram.com/adhamz.studios" class="contact-link" target="_blank">@adhamz.studios</a>
+  </div>
+  <a href="mailto:adhamzakaria17@gmail.com" class="cta-btn">Get in touch</a>
+</section>
+
+<footer>
+  <span>© 2026 Adham Mohammed Zakaria</span>
+  <span>Cairo, Egypt · AI Artist</span>
+</footer>
+
+<script>
+const state={};
+
+function initGallery(id){
+  state[id]={cur:0,total:document.querySelectorAll('#dots-'+id+' .gallery-dot').length};
+}
+
+function updateGallery(id){
+  const s=state[id];
+  const track=document.querySelector('[data-id="'+id+'"] .gallery-track');
+  track.style.transform='translateX(-'+s.cur*100+'%)';
+  document.querySelectorAll('#dots-'+id+' .gallery-dot').forEach((d,i)=>{
+    d.classList.toggle('active',i===s.cur);
+  });
+}
+
+function slide(id,dir){
+  const s=state[id];
+  s.cur=(s.cur+dir+s.total)%s.total;
+  updateGallery(id);
+}
+
+function goTo(id,i){
+  state[id].cur=i;
+  updateGallery(id);
+}
+
+// Init all galleries
+['zara','porsche','chaos','tekila','dopamine','loom','mars'].forEach(id=>{
+  initGallery(id);
+});
+
+// Auto-advance galleries
+setInterval(()=>{
+  ['zara','porsche','chaos','tekila','dopamine','loom','mars'].forEach(id=>{
+    if(state[id]) slide(id,1);
+  });
+},4000);
+
+// Nav scroll
+window.addEventListener('scroll',function(){
+  document.querySelector('nav').style.borderBottomColor=
+    window.scrollY>60?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.07)';
+});
+</script>
+</body>
+</html>
